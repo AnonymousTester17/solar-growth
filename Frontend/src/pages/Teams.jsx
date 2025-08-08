@@ -1,12 +1,24 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button.jsx";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.jsx";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card.jsx";
 import { Input } from "@/components/ui/input.jsx";
 import { useAuth } from "@/contexts/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast.jsx";
-import { Users, Plus, Search, UserPlus, AlertCircle, RefreshCw } from "lucide-react";
+import {
+  Users,
+  Plus,
+  Search,
+  UserPlus,
+  AlertCircle,
+  RefreshCw,
+} from "lucide-react";
 
 const Teams = () => {
   const { user, token } = useAuth();
@@ -20,14 +32,15 @@ const Teams = () => {
   // Fetch teams data from backend
   const fetchTeams = async () => {
     if (!token) return;
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
+      // ... inside the fetchTeams function
       const response = await fetch('/api/teams', {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Add this line
           'Content-Type': 'application/json',
         },
       });
@@ -48,10 +61,10 @@ const Teams = () => {
       if (data.success) {
         setTeams(data.teams);
       } else {
-        throw new Error(data.message || 'Failed to fetch teams');
+        throw new Error(data.message || "Failed to fetch teams");
       }
     } catch (error) {
-      console.error('Error fetching teams:', error);
+      console.error("Error fetching teams:", error);
       setError(error.message);
       toast({
         description: "Failed to load teams. Please try again.",
@@ -70,9 +83,10 @@ const Teams = () => {
     fetchTeams();
   };
 
-  const filteredTeams = teams.filter(team =>
-    team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    team.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTeams = teams.filter(
+    (team) =>
+      team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      team.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (!user) {
@@ -103,13 +117,12 @@ const Teams = () => {
               onClick={handleRefresh}
               disabled={loading}
             >
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
+              />
               Refresh
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate("/home")}
-            >
+            <Button variant="outline" onClick={() => navigate("/home")}>
               Back to Dashboard
             </Button>
             <Button>
@@ -131,7 +144,9 @@ const Teams = () => {
                 <div className="flex items-center space-x-2">
                   <AlertCircle className="h-5 w-5 text-red-600" />
                   <div>
-                    <p className="text-sm font-medium text-red-800">Error loading teams</p>
+                    <p className="text-sm font-medium text-red-800">
+                      Error loading teams
+                    </p>
                     <p className="text-sm text-red-600">{error}</p>
                   </div>
                   <Button
@@ -222,7 +237,9 @@ const Teams = () => {
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Active Projects</span>
+                        <span className="text-sm text-gray-600">
+                          Active Projects
+                        </span>
                         <span className="text-sm font-medium text-green-600">
                           {team.activeProjects || 0}
                         </span>
@@ -231,15 +248,22 @@ const Teams = () => {
                         <p className="text-sm text-gray-600">Team Members:</p>
                         <div className="space-y-1">
                           {team.members?.slice(0, 3).map((member, idx) => (
-                            <div key={idx} className="flex items-center space-x-2">
+                            <div
+                              key={idx}
+                              className="flex items-center space-x-2"
+                            >
                               <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
                                 <span className="text-xs font-medium">
-                                  {member.name?.charAt(0) || 'U'}
+                                  {member.name?.charAt(0) || "U"}
                                 </span>
                               </div>
                               <div>
-                                <p className="text-xs font-medium">{member.name || 'Unknown'}</p>
-                                <p className="text-xs text-gray-500">{member.role || 'Member'}</p>
+                                <p className="text-xs font-medium">
+                                  {member.name || "Unknown"}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  {member.role || "Member"}
+                                </p>
                               </div>
                             </div>
                           ))}
@@ -271,13 +295,12 @@ const Teams = () => {
           >
             <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {teams.length === 0 ? 'No teams available' : 'No teams found'}
+              {teams.length === 0 ? "No teams available" : "No teams found"}
             </h3>
             <p className="text-gray-500">
-              {teams.length === 0 
-                ? 'There are no teams available at the moment.' 
-                : 'Try adjusting your search terms or create a new team.'
-              }
+              {teams.length === 0
+                ? "There are no teams available at the moment."
+                : "Try adjusting your search terms or create a new team."}
             </p>
           </motion.div>
         )}
@@ -286,4 +309,4 @@ const Teams = () => {
   );
 };
 
-export default Teams; 
+export default Teams;

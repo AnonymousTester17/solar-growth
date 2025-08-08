@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button.jsx";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.jsx";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card.jsx";
 import { Input } from "@/components/ui/input.jsx";
 import { useAuth } from "@/contexts/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
@@ -14,23 +19,24 @@ const Profile = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  
-  // ... inside the Profile component
-const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    phone: '',
-});
 
-useEffect(() => {
+  // ... inside the Profile component
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    phone: "",
+  });
+
+  // ... inside the Profile component
+  useEffect(() => {
     if (user) {
-        setFormData({
-            username: user.username || "",
-            email: user.email || "",
-            phone: user.phone || "",
-        });
+      setFormData({
+        username: user.username || "",
+        email: user.email || "",
+        phone: user.phone || "",
+      });
     }
-}, [user]); // Add user to the dependency array
+  }, [user]); // Add user to the dependency array
 
   const handleLogout = async () => {
     setLoading(true);
@@ -55,7 +61,8 @@ useEffect(() => {
       setIsEditing(false);
     } catch (error) {
       toast({
-        description: error instanceof Error ? error.message : "Failed to update profile",
+        description:
+          error instanceof Error ? error.message : "Failed to update profile",
         variant: "destructive",
       });
     } finally {
@@ -95,17 +102,10 @@ useEffect(() => {
             </p>
           </div>
           <div className="flex gap-4">
-            <Button
-              variant="outline"
-              onClick={() => navigate("/home")}
-            >
+            <Button variant="outline" onClick={() => navigate("/home")}>
               Back to Dashboard
             </Button>
-            <Button
-              variant="outline"
-              onClick={handleLogout}
-              disabled={loading}
-            >
+            <Button variant="outline" onClick={handleLogout} disabled={loading}>
               {loading ? "Logging out..." : "Logout"}
             </Button>
           </div>
@@ -141,11 +141,7 @@ useEffect(() => {
                         <X className="h-4 w-4 mr-2" />
                         Cancel
                       </Button>
-                      <Button
-                        size="sm"
-                        onClick={handleSave}
-                        disabled={loading}
-                      >
+                      <Button size="sm" onClick={handleSave} disabled={loading}>
                         <Save className="h-4 w-4 mr-2" />
                         {loading ? "Saving..." : "Save"}
                       </Button>
@@ -227,7 +223,9 @@ useEffect(() => {
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Member Since</span>
                     <span className="text-sm font-medium">
-                      {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : new Date().toLocaleDateString()}
+                      {user.createdAt
+                        ? new Date(user.createdAt).toLocaleDateString()
+                        : new Date().toLocaleDateString()}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -237,21 +235,31 @@ useEffect(() => {
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Deposited Amount</span>
+                    <span className="text-sm text-gray-600">
+                      Deposited Amount
+                    </span>
                     <span className="text-sm font-medium text-blue-600">
                       ${user.depositedAmount?.toFixed(2) || "0.00"}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Withdrawn Amount</span>
+                    <span className="text-sm text-gray-600">
+                      Withdrawn Amount
+                    </span>
                     <span className="text-sm font-medium text-red-600">
                       ${user.withdrawnAmount?.toFixed(2) || "0.00"}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Account Status</span>
-                    <span className={`text-sm font-medium ${user.isVerified ? 'text-green-600' : 'text-red-600'}`}>
-                      {user.isVerified ? 'Verified' : 'Unverified'}
+                    <span className="text-sm text-gray-600">
+                      Account Status
+                    </span>
+                    <span
+                      className={`text-sm font-medium ${
+                        user.isVerified ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {user.isVerified ? "Verified" : "Unverified"}
                     </span>
                   </div>
                 </CardContent>
@@ -264,4 +272,4 @@ useEffect(() => {
   );
 };
 
-export default Profile; 
+export default Profile;

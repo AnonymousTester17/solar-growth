@@ -44,7 +44,8 @@ const Landing = () => {
     setOtpForm({ otp: "" });
   };
 
-  const handleSignup = async (e) => {
+  // ... inside the handleSignup function
+const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -53,7 +54,7 @@ const Landing = () => {
         signupForm.phone,
         signupForm.email,
         signupForm.password,
-        signupForm.confirmPassword
+        signupForm.confirmPassword // This line is now correct
       );
       toast({
         description: "Registration successful! Please verify your OTP.",
