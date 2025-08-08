@@ -14,11 +14,23 @@ const Profile = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    username: user?.username || "",
-    email: user?.email || "",
-    phone: user?.phone || "",
-  });
+  
+  // ... inside the Profile component
+const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    phone: '',
+});
+
+useEffect(() => {
+    if (user) {
+        setFormData({
+            username: user.username || "",
+            email: user.email || "",
+            phone: user.phone || "",
+        });
+    }
+}, [user]); // Add user to the dependency array
 
   const handleLogout = async () => {
     setLoading(true);
