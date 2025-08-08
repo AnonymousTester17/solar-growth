@@ -68,6 +68,14 @@ const validateOTP = [
     .withMessage('OTP must be 6 digits')
 ];
 
+// New validation middleware for resending OTP
+const validatePhone = [
+  body('phone')
+    .trim()
+    .matches(/^[0-9]{10}$/)
+    .withMessage('Phone number must be 10 digits')
+];
+
 // Generate JWT Token
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -100,21 +108,21 @@ router.post('/register', validateRegistration, async (req, res) => {
 
     if (existingUser) {
       if (existingUser.username === sanitizedUsername) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Username already exists' 
+        return res.status(400).json({
+          success: false,
+          message: 'Username already exists'
         });
       }
       if (existingUser.phone === sanitizedPhone) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Phone number already registered' 
+        return res.status(400).json({
+          success: false,
+          message: 'Phone number already registered'
         });
       }
       if (existingUser.email === sanitizedEmail) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Email already registered' 
+        return res.status(400).json({
+          success: false,
+          message: 'Email already registered'
         });
       }
     }
@@ -144,32 +152,32 @@ router.post('/register', validateRegistration, async (req, res) => {
         to: `+91${sanitizedPhone}` // if in India
       });
 
-      res.json({ 
-        success: true, 
+      res.json({
+        success: true,
         message: 'Registration successful! Please verify your OTP.',
         userId: user._id
       });
     } catch (smsError) {
       // If SMS fails, delete the user and return error
       await User.findByIdAndDelete(user._id);
-      res.status(500).json({ 
-        success: false, 
-        message: 'Failed to send OTP. Please try again.' 
+      res.status(500).json({
+        success: false,
+        message: 'Failed to send OTP. Please try again.'
       });
     }
 
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Registration failed', 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: 'Registration failed',
+      error: error.message
     });
   }
 });
 
-// Send OTP (for resending)
-router.post('/send-otp', validateOTP, async (req, res) => {
+// Send OTP (for resending) - Use the new validatePhone middleware
+router.post('/send-otp', validatePhone, async (req, res) => {
   try {
     // Check for validation errors
     const errors = validationResult(req);
@@ -187,9 +195,9 @@ router.post('/send-otp', validateOTP, async (req, res) => {
     const user = await User.findOne({ phone: sanitizedPhone });
 
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
       });
     }
 
@@ -209,17 +217,17 @@ router.post('/send-otp', validateOTP, async (req, res) => {
       to: `+91${sanitizedPhone}`
     });
 
-    res.json({ 
-      success: true, 
-      message: 'OTP sent successfully!' 
+    res.json({
+      success: true,
+      message: 'OTP sent successfully!'
     });
 
   } catch (error) {
     console.error('Send OTP error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to send OTP', 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send OTP',
+      error: error.message
     });
   }
 });
@@ -244,23 +252,23 @@ router.post('/verify-otp', validateOTP, async (req, res) => {
     const user = await User.findOne({ phone: sanitizedPhone });
 
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
       });
     }
 
     if (user.otp !== sanitizedOTP) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid OTP' 
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid OTP'
       });
     }
 
     if (user.otp_expiry < new Date()) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'OTP expired' 
+      return res.status(400).json({
+        success: false,
+        message: 'OTP expired'
       });
     }
 
@@ -274,8 +282,8 @@ router.post('/verify-otp', validateOTP, async (req, res) => {
     // Generate JWT token
     const token = generateToken(user._id);
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: 'OTP verified successfully! Registration completed.',
       token,
       user: user.getPublicProfile()
@@ -283,10 +291,10 @@ router.post('/verify-otp', validateOTP, async (req, res) => {
 
   } catch (error) {
     console.error('Verify OTP error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error verifying OTP', 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: 'Error verifying OTP',
+      error: error.message
     });
   }
 });
@@ -316,26 +324,26 @@ router.post('/login', validateLogin, async (req, res) => {
     });
 
     if (!user) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Invalid credentials' 
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
       });
     }
 
     // Check if user is verified
     if (!user.isVerified) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Please verify your account with OTP first' 
+      return res.status(401).json({
+        success: false,
+        message: 'Please verify your account with OTP first'
       });
     }
 
     // Verify password
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Invalid credentials' 
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
       });
     }
 
@@ -346,8 +354,8 @@ router.post('/login', validateLogin, async (req, res) => {
     // Generate JWT token
     const token = generateToken(user._id);
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: 'Login successful!',
       token,
       user: user.getPublicProfile()
@@ -355,10 +363,10 @@ router.post('/login', validateLogin, async (req, res) => {
 
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Login failed', 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: 'Login failed',
+      error: error.message
     });
   }
 });
@@ -367,7 +375,7 @@ router.post('/login', validateLogin, async (req, res) => {
 router.get('/me', async (req, res) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    
+
     if (!token) {
       return res.status(401).json({ success: false, message: 'No token provided' });
     }
@@ -389,7 +397,7 @@ router.get('/me', async (req, res) => {
 router.post('/logout', async (req, res) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    
+
     if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       await User.findByIdAndUpdate(decoded.userId, { refreshToken: null });
